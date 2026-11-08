@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="/TV_Video_Player_App/">
+  <script>
+    // Universal dynamic base-href resolution:
+    // Seamlessly supports GitHub Pages (/TV_Video_Player_App/), Vercel (/), Netlify, and localhost
+    (function() {
+      var base = document.querySelector('base');
+      if (!base) {
+        base = document.createElement('base');
+        document.head.prepend(base);
+      }
+      var path = window.location.pathname;
+      if (!path.endsWith('/')) {
+        // If visiting without trailing slash on GitHub Pages, redirect with trailing slash so relative paths resolve cleanly
+        if (!path.includes('.')) {
+          window.location.replace(path + '/' + window.location.search + window.location.hash);
+          return;
+        }
+        var lastSlash = path.lastIndexOf('/');
+        path = path.substring(0, lastSlash + 1);
+      }
+      base.setAttribute('href', path || '/');
+    })();
+  </script>
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -151,13 +160,22 @@
         }, 500);
       }
 
+      // Catch global JS/network errors and display them instead of a blank screen
+      window.addEventListener('error', function(event) {
+        var subtitle = document.querySelector('.loader-subtitle');
+        if (subtitle) {
+          subtitle.textContent = 'Error: ' + (event.message || 'Script load failure');
+          subtitle.style.color = '#ff6b6b';
+        }
+      });
+
       // 1. Listen for Flutter's first frame event
       window.addEventListener('flutter-first-frame', hideLoader);
 
       // 2. Observer for Flutter elements mounted into the DOM
       var observer = new MutationObserver(function(mutations, obs) {
         if (document.querySelector('flutter-view, flt-glass-pane, flt-scene-host, canvas')) {
-          setTimeout(hideLoader, 200);
+          setTimeout(hideLoader, 600);
           obs.disconnect();
         }
       });
