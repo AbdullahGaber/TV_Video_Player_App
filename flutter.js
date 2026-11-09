@@ -1,7 +1,7 @@
 (() => {
   var C = { blink: true, gecko: false, webkit: false, unknown: false }, A = () => navigator.vendor === "Google Inc." || navigator.userAgent.includes("Edg/") ? "blink" : navigator.vendor === "Apple Computer, Inc." ? "webkit" : navigator.vendor === "" && navigator.userAgent.includes("Firefox") ? "gecko" : "unknown", T = A(), x = () => typeof ImageDecoder > "u" ? false : T === "blink", R = () => typeof Intl.v8BreakIterator < "u" && typeof Intl.Segmenter < "u", j = () => typeof window.TextCluster < "u", B = () => {
     let n = [0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 95, 1, 120, 0];
-    if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{return WebAssembly.validate(new Uint8Array(n));}catch(e){return false;}}catch(e){return false;}
+    if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{return WebAssembly.validate(new Uint8Array(n));}catch(e){return false;}
   }, K = () => {
     let n = document.createElement("canvas");
     return n.width = 1, n.height = 1, n.getContext("webgl2") != null ? 2 : n.getContext("webgl") != null ? 1 : -1;

@@ -1,7 +1,7 @@
 (() => {
   var C = { blink: true, gecko: false, webkit: false, unknown: false }, A = () => navigator.vendor === "Google Inc." || navigator.userAgent.includes("Edg/") ? "blink" : navigator.vendor === "Apple Computer, Inc." ? "webkit" : navigator.vendor === "" && navigator.userAgent.includes("Firefox") ? "gecko" : "unknown", T = A(), x = () => typeof ImageDecoder > "u" ? false : T === "blink", R = () => typeof Intl.v8BreakIterator < "u" && typeof Intl.Segmenter < "u", j = () => typeof window.TextCluster < "u", B = () => {
     let n = [0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 95, 1, 120, 0];
-    if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{return WebAssembly.validate(new Uint8Array(n));}catch(e){return false;}}catch(e){return false;}
+    if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{return WebAssembly.validate(new Uint8Array(n));}catch(e){return false;}
   }, K = () => {
     let n = document.createElement("canvas");
     return n.width = 1, n.height = 1, n.getContext("webgl2") != null ? 2 : n.getContext("webgl") != null ? 1 : -1;
@@ -284,7 +284,7 @@ if (!window._flutter) {
 _flutter.buildConfig = { "engineRevision": "5d531788691ec3404cac0cee66ead4007b177363", "wasmHashes": { "wimp.wasm": "7474f6074c42c4be503c9059c9b5058e468a68a8917ac6c3607f0da4922f7e5a", "webparagraph/canvaskit.wasm": "7a61c4ad71781875a80bbfc5ee6e49686dd190d629e0fe986d3ecc05ada58856", "skwasm.wasm": "a957befea55cf597eeebcf3286f1b88f463f3ad8bfc13e55aa8f5d34cd2ade4d", "chromium/canvaskit.wasm": "ba4024133403777f41c709b9e76e9f4bdb76c73d33adba8645527a59d815d824", "canvaskit.wasm": "2898c0795cf4a694e86ee3445c7414c2503fbcb46967154762f50ebde988da04", "skwasm_heavy.wasm": "781a14fc7e9cd387ee6df4a056f62af7e940c60cc42ce04571cc2e810042c588" }, "builds": [{ "compileTarget": "dart2js", "renderer": "canvaskit", "mainJsPath": "main.dart.js" }, {}] };
 _flutter.loader.load({
   serviceWorkerSettings: {
-    serviceWorkerVersion: "3920677047"
+    serviceWorkerVersion: "1074589048"
     /* Flutter's service worker is deprecated and will be removed in a future Flutter release. */
   }
 });
