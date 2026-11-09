@@ -44,6 +44,8 @@
   <style>
     * {
       box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
     }
     html, body {
       margin: 0;
@@ -130,6 +132,175 @@
       0%, 100% { transform: scale(1); opacity: 0.9; }
       50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 18px rgba(33, 150, 243, 0.85)); }
     }
+
+    /* Fallback HTML5 TV Player (For TV browsers lacking WebAssembly/WebGL) */
+    #tv-fallback-player {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000000;
+      z-index: 1000;
+      overflow: hidden;
+    }
+    #tv-fallback-video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000000;
+    }
+    .tv-overlay-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 32px 48px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .tv-header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tv-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #2196F3;
+    }
+    .tv-video-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 4px 0 0 0;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .tv-video-counter {
+      font-size: 16px;
+      color: rgba(255,255,255,0.65);
+    }
+    .tv-badge {
+      background: rgba(33, 150, 243, 0.2);
+      border: 1px solid rgba(33, 150, 243, 0.4);
+      color: #64B5F6;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .tv-unmute-btn {
+      position: absolute;
+      top: 36px;
+      right: 48px;
+      background: rgba(33, 150, 243, 0.9);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 24px;
+      border: none;
+      cursor: pointer;
+      display: none;
+      pointer-events: auto;
+      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.4);
+    }
+    .tv-overlay-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 40px 48px 32px 48px;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      transition: opacity 0.3s ease;
+    }
+    .tv-progress-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #ffffff;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tv-progress-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 3px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .tv-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: #2196F3;
+      border-radius: 3px;
+      transition: width 0.15s linear;
+    }
+    .tv-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+    .tv-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid transparent;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .tv-btn:hover, .tv-btn:focus, .tv-btn.focused {
+      background: rgba(33, 150, 243, 0.35);
+      border-color: #2196F3;
+      transform: scale(1.12);
+      box-shadow: 0 0 16px rgba(33, 150, 243, 0.6);
+    }
+    .tv-btn-play {
+      width: 68px;
+      height: 68px;
+      background: #2196F3;
+    }
+    .tv-btn-play:hover, .tv-btn-play:focus, .tv-btn-play.focused {
+      background: #1976D2;
+      transform: scale(1.15);
+      box-shadow: 0 0 20px rgba(33, 150, 243, 0.8);
+    }
+    .tv-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: currentColor;
+    }
+    .tv-btn-play svg {
+      width: 32px;
+      height: 32px;
+    }
+    .hidden-overlay {
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -147,9 +318,74 @@
     <p class="loader-subtitle">Loading player engine...</p>
   </div>
 
+  <!-- HTML5 TV Video Player Fallback (Activated on TV browsers lacking WebAssembly/WebGL) -->
+  <div id="tv-fallback-player">
+    <video id="tv-fallback-video" playsinline preload="auto"></video>
+
+    <!-- Top Overlay -->
+    <div class="tv-overlay-top" id="tv-overlay-top">
+      <div class="tv-header-info">
+        <div class="tv-brand">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2">
+            <rect x="2" y="7" width="20" height="13" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+          <span>TV Video Player</span>
+        </div>
+        <h2 class="tv-video-title" id="fallback-title">Big Buck Bunny 1080 10s 5mb</h2>
+        <span class="tv-video-counter" id="fallback-counter">Video 1 of 3</span>
+      </div>
+      <div class="tv-badge">TV HTML5 Mode</div>
+      <button class="tv-unmute-btn" id="fallback-unmute" onclick="window.tvPlayerUnmute()">Tap to unmute 🔊</button>
+    </div>
+
+    <!-- Bottom Controls Overlay -->
+    <div class="tv-overlay-bottom" id="tv-overlay-bottom">
+      <div class="tv-progress-container">
+        <span id="fallback-time-current">0:00</span>
+        <div class="tv-progress-bar" id="fallback-progress-bar" onclick="window.tvPlayerSeek(event)">
+          <div class="tv-progress-fill" id="fallback-progress-fill"></div>
+        </div>
+        <span id="fallback-time-total">0:00</span>
+      </div>
+
+      <div class="tv-controls-bar">
+        <!-- Previous -->
+        <button class="tv-btn" id="btn-prev" onclick="window.tvPlayerPrev()" title="Previous Video (Up / Prev)">
+          <svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"></line></svg>
+        </button>
+        <!-- Rewind 10s -->
+        <button class="tv-btn" id="btn-rewind" onclick="window.tvPlayerRewind()" title="Rewind 10s (Left)">
+          <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.2 3.16-1.94 5.12-1.94 4.02 0 7.33 2.99 7.89 6.89l2.49-.37C22.18 11.51 17.84 8 12.5 8z"></path></svg>
+        </button>
+        <!-- Play / Pause -->
+        <button class="tv-btn tv-btn-play" id="btn-play" onclick="window.tvPlayerTogglePlay()" title="Play / Pause (OK / Space)">
+          <svg id="svg-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <svg id="svg-pause" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+        <!-- Forward 10s -->
+        <button class="tv-btn" id="btn-forward" onclick="window.tvPlayerForward()" title="Forward 10s (Right)">
+          <svg viewBox="0 0 24 24"><path d="M11.5 8c2.65 0 5.05.99 6.9 2.6L22 7v9h-9l3.62-3.62c-1.39-1.2-3.16-1.94-5.12-1.94-4.02 0-7.33 2.99-7.89 6.89l-2.49-.37C1.82 11.51 6.16 8 11.5 8z"></path></svg>
+        </button>
+        <!-- Next -->
+        <button class="tv-btn" id="btn-next" onclick="window.tvPlayerNext()" title="Next Video (Down / Next)">
+          <svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"></line></svg>
+        </button>
+        <!-- Mute -->
+        <button class="tv-btn" id="btn-mute" onclick="window.tvPlayerToggleMute()" title="Toggle Mute (M)">
+          <svg id="svg-volume-on" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" fill="none" stroke="currentColor" stroke-width="2"></path></svg>
+          <svg id="svg-volume-off" viewBox="0 0 24 24" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2"></line><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2"></line></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function() {
       var loader = document.getElementById('native-loader');
+      var fallbackContainer = document.getElementById('tv-fallback-player');
+      var fallbackActive = false;
+
       function hideLoader() {
         if (!loader || loader.classList.contains('fade-out')) return;
         loader.classList.add('fade-out');
@@ -160,19 +396,242 @@
         }, 500);
       }
 
-      // Catch global JS/network errors and display them instead of a blank screen
+      // Feature detection: Check WebAssembly & WebGL
+      var hasWasm = (function() {
+        try {
+          return typeof WebAssembly !== 'undefined' && typeof WebAssembly.instantiate === 'function';
+        } catch(e) {
+          return false;
+        }
+      })();
+
+      var hasWebGL = (function() {
+        try {
+          var canvas = document.createElement('canvas');
+          return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+        } catch(e) {
+          return false;
+        }
+      })();
+
+      // -------------------------------------------------------------
+      // Fallback HTML5 TV Video Player (when WebAssembly is missing)
+      // -------------------------------------------------------------
+      var playlist = [
+        { title: "Big Buck Bunny 1080 10s 5mb", file: "assets/assets/videos/Big_Buck_Bunny_1080_10s_5MB.mp4" },
+        { title: "Sintel 1080 10s 2mb", file: "assets/assets/videos/Sintel_1080_10s_2MB.mp4" },
+        { title: "Jellyfish 1080 10s 1mb", file: "assets/assets/videos/Jellyfish_1080_10s_1MB.mp4" }
+      ];
+      var currentIndex = 0;
+      var videoEl = document.getElementById('tv-fallback-video');
+      var overlayTop = document.getElementById('tv-overlay-top');
+      var overlayBottom = document.getElementById('tv-overlay-bottom');
+      var titleEl = document.getElementById('fallback-title');
+      var counterEl = document.getElementById('fallback-counter');
+      var timeCurrent = document.getElementById('fallback-time-current');
+      var timeTotal = document.getElementById('fallback-time-total');
+      var progressFill = document.getElementById('fallback-progress-fill');
+      var svgPlay = document.getElementById('svg-play');
+      var svgPause = document.getElementById('svg-pause');
+      var svgVolOn = document.getElementById('svg-volume-on');
+      var svgVolOff = document.getElementById('svg-volume-off');
+      var unmuteBtn = document.getElementById('fallback-unmute');
+      var hideControlsTimer = null;
+
+      function formatTime(seconds) {
+        if (isNaN(seconds) || seconds < 0) return "0:00";
+        var m = Math.floor(seconds / 60);
+        var s = Math.floor(seconds % 60);
+        return m + ":" + (s < 10 ? "0" : "") + s;
+      }
+
+      function showControls() {
+        if (overlayTop) overlayTop.classList.remove('hidden-overlay');
+        if (overlayBottom) overlayBottom.classList.remove('hidden-overlay');
+        clearTimeout(hideControlsTimer);
+        hideControlsTimer = setTimeout(function() {
+          if (videoEl && !videoEl.paused) {
+            if (overlayTop) overlayTop.classList.add('hidden-overlay');
+            if (overlayBottom) overlayBottom.classList.add('hidden-overlay');
+          }
+        }, 4000);
+      }
+
+      function loadVideo(index) {
+        if (index < 0) index = playlist.length - 1;
+        if (index >= playlist.length) index = 0;
+        currentIndex = index;
+
+        var item = playlist[currentIndex];
+        titleEl.textContent = item.title;
+        counterEl.textContent = "Video " + (currentIndex + 1) + " of " + playlist.length;
+        videoEl.src = item.file;
+        videoEl.load();
+
+        var playPromise = videoEl.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(function(err) {
+            // Autoplay rejected -> mute and retry
+            videoEl.muted = true;
+            videoEl.play();
+            if (unmuteBtn) unmuteBtn.style.display = 'block';
+          });
+        }
+        showControls();
+      }
+
+      window.tvPlayerTogglePlay = function() {
+        if (videoEl.paused) {
+          videoEl.play();
+        } else {
+          videoEl.pause();
+        }
+        showControls();
+      };
+
+      window.tvPlayerNext = function() {
+        loadVideo(currentIndex + 1);
+      };
+
+      window.tvPlayerPrev = function() {
+        loadVideo(currentIndex - 1);
+      };
+
+      window.tvPlayerForward = function() {
+        videoEl.currentTime = Math.min(videoEl.duration || 0, videoEl.currentTime + 10);
+        showControls();
+      };
+
+      window.tvPlayerRewind = function() {
+        videoEl.currentTime = Math.max(0, videoEl.currentTime - 10);
+        showControls();
+      };
+
+      window.tvPlayerToggleMute = function() {
+        videoEl.muted = !videoEl.muted;
+        if (svgVolOn) svgVolOn.style.display = videoEl.muted ? 'none' : 'block';
+        if (svgVolOff) svgVolOff.style.display = videoEl.muted ? 'block' : 'none';
+        if (!videoEl.muted && unmuteBtn) unmuteBtn.style.display = 'none';
+        showControls();
+      };
+
+      window.tvPlayerUnmute = function() {
+        videoEl.muted = false;
+        if (unmuteBtn) unmuteBtn.style.display = 'none';
+        if (svgVolOn) svgVolOn.style.display = 'block';
+        if (svgVolOff) svgVolOff.style.display = 'none';
+        showControls();
+      };
+
+      window.tvPlayerSeek = function(event) {
+        var rect = event.currentTarget.getBoundingClientRect();
+        var pos = (event.clientX - rect.left) / rect.width;
+        if (videoEl.duration) {
+          videoEl.currentTime = pos * videoEl.duration;
+        }
+        showControls();
+      };
+
+      // Video element events
+      videoEl.addEventListener('play', function() {
+        if (svgPlay) svgPlay.style.display = 'none';
+        if (svgPause) svgPause.style.display = 'block';
+        showControls();
+      });
+
+      videoEl.addEventListener('pause', function() {
+        if (svgPlay) svgPlay.style.display = 'block';
+        if (svgPause) svgPause.style.display = 'none';
+        showControls();
+      });
+
+      videoEl.addEventListener('timeupdate', function() {
+        if (videoEl.duration) {
+          var pct = (videoEl.currentTime / videoEl.duration) * 100;
+          progressFill.style.width = pct + '%';
+          timeCurrent.textContent = formatTime(videoEl.currentTime);
+          timeTotal.textContent = formatTime(videoEl.duration);
+        }
+      });
+
+      videoEl.addEventListener('ended', function() {
+        // Continuous auto-loop to next video
+        window.tvPlayerNext();
+      });
+
+      // TV Remote Control & Keyboard listeners
+      window.addEventListener('keydown', function(e) {
+        if (!fallbackActive) return;
+        showControls();
+        switch (e.keyCode || e.which) {
+          case 32: // Space
+          case 13: // Enter / OK
+          case 179: // MediaPlayPause
+            e.preventDefault();
+            window.tvPlayerTogglePlay();
+            break;
+          case 37: // Left Arrow
+          case 227: // Rewind
+            e.preventDefault();
+            window.tvPlayerRewind();
+            break;
+          case 39: // Right Arrow
+          case 228: // FastForward
+            e.preventDefault();
+            window.tvPlayerForward();
+            break;
+          case 38: // Up Arrow
+          case 33: // PageUp
+          case 177: // MediaTrackPrevious
+            e.preventDefault();
+            window.tvPlayerPrev();
+            break;
+          case 40: // Down Arrow
+          case 34: // PageDown
+          case 176: // MediaTrackNext
+            e.preventDefault();
+            window.tvPlayerNext();
+            break;
+          case 77: // 'M' / Mute
+          case 173: // Mute key
+            e.preventDefault();
+            window.tvPlayerToggleMute();
+            break;
+        }
+      });
+
+      window.addEventListener('mousemove', showControls);
+      window.addEventListener('touchstart', showControls);
+
+      function activateHtml5TvPlayer() {
+        if (fallbackActive) return;
+        fallbackActive = true;
+        hideLoader();
+        if (fallbackContainer) {
+          fallbackContainer.style.display = 'block';
+        }
+        loadVideo(0);
+      }
+
+      // Catch global JS/network errors
       window.addEventListener('error', function(event) {
+        var msg = event.message || '';
+        if (msg.indexOf('WebAssembly') !== -1 || msg.indexOf('canvaskit') !== -1) {
+          console.warn('Wasm/CanvasKit load failure. Activating HTML5 TV player fallback.');
+          activateHtml5TvPlayer();
+          return;
+        }
         var subtitle = document.querySelector('.loader-subtitle');
-        if (subtitle) {
-          subtitle.textContent = 'Error: ' + (event.message || 'Script load failure');
+        if (subtitle && !fallbackActive) {
+          subtitle.textContent = 'Error: ' + msg;
           subtitle.style.color = '#ff6b6b';
         }
       });
 
-      // 1. Listen for Flutter's first frame event
+      // Listen for Flutter's first frame event
       window.addEventListener('flutter-first-frame', hideLoader);
 
-      // 2. Observer for Flutter elements mounted into the DOM
+      // Observer for Flutter elements mounted into the DOM
       var observer = new MutationObserver(function(mutations, obs) {
         if (document.querySelector('flutter-view, flt-glass-pane, flt-scene-host, canvas')) {
           setTimeout(hideLoader, 600);
@@ -181,11 +640,31 @@
       });
       observer.observe(document.body, { childList: true, subtree: true });
 
-      // 3. Fallback timeout
-      setTimeout(hideLoader, 15000);
+      // Initialization Strategy:
+      if (hasWasm && hasWebGL) {
+        // Modern browser -> Load Flutter Web
+        var s = document.createElement('script');
+        s.src = 'flutter_bootstrap.js';
+        s.async = true;
+        s.onerror = function() {
+          console.warn('Failed to load flutter_bootstrap.js. Activating HTML5 TV player fallback.');
+          activateHtml5TvPlayer();
+        };
+        document.body.appendChild(s);
+
+        // Fallback safety timeout if Flutter engine fails to draw in 12s
+        setTimeout(function() {
+          if (!document.querySelector('flutter-view, flt-glass-pane, flt-scene-host, canvas')) {
+            console.warn('Flutter engine timeout. Activating HTML5 TV player fallback.');
+            activateHtml5TvPlayer();
+          }
+        }, 12000);
+      } else {
+        // Smart TV browser without WebAssembly or WebGL -> Immediate smooth activation!
+        console.log('WebAssembly not supported in this browser. Running TV HTML5 video player.');
+        setTimeout(activateHtml5TvPlayer, 300);
+      }
     })();
   </script>
-
-  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

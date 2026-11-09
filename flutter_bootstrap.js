@@ -1,7 +1,7 @@
 (() => {
   var C = { blink: true, gecko: false, webkit: false, unknown: false }, A = () => navigator.vendor === "Google Inc." || navigator.userAgent.includes("Edg/") ? "blink" : navigator.vendor === "Apple Computer, Inc." ? "webkit" : navigator.vendor === "" && navigator.userAgent.includes("Firefox") ? "gecko" : "unknown", T = A(), x = () => typeof ImageDecoder > "u" ? false : T === "blink", R = () => typeof Intl.v8BreakIterator < "u" && typeof Intl.Segmenter < "u", j = () => typeof window.TextCluster < "u", B = () => {
     let n = [0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 95, 1, 120, 0];
-    return WebAssembly.validate(new Uint8Array(n));
+    if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{if(typeof WebAssembly==="undefined"||!WebAssembly||typeof WebAssembly.validate!=="function")return false;try{return WebAssembly.validate(new Uint8Array(n));}catch(e){return false;}}catch(e){return false;}
   }, K = () => {
     let n = document.createElement("canvas");
     return n.width = 1, n.height = 1, n.getContext("webgl2") != null ? 2 : n.getContext("webgl") != null ? 1 : -1;
@@ -175,9 +175,9 @@ For more details, see: https://github.com/flutter/flutter/issues/156910`);
         })();
       }
       return a;
-    }, c = WebAssembly.compileStreaming(o());
+    }, c=(typeof WebAssembly!=="undefined"&&typeof WebAssembly.compileStreaming==="function")?WebAssembly.compileStreaming(o()):null;
     return (a, l) => ((async () => {
-      let p = await c, d = await WebAssembly.instantiate(p, a);
+      if(typeof WebAssembly==="undefined"){throw new Error("WebAssembly is not supported by this browser.");}let p=c?await c:await WebAssembly.compile(await(await o()).arrayBuffer()),d=await WebAssembly.instantiate(p,a);
       l(d, p);
     })(), {});
   };
