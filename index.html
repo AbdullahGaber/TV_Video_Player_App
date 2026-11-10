@@ -13,7 +13,7 @@
       }
       var path = window.location.pathname;
       if (!path.endsWith('/')) {
-        // If visiting without trailing slash on GitHub Pages, redirect with trailing slash so relative paths resolve cleanly
+        // If visiting without trailing slash on GitHub Pages, redirect with trailing slash
         if (!path.includes('.')) {
           window.location.replace(path + '/' + window.location.search + window.location.hash);
           return;
@@ -27,18 +27,18 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="TV Video Player Flutter Web Application">
+  <meta name="description" content="StreamHub TV Video Player Web App">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="TV Video Player">
+  <meta name="apple-mobile-web-app-title" content="StreamHub TV">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>TV Video Player</title>
+  <title>StreamHub TV</title>
   <link rel="manifest" href="manifest.json">
 
   <style>
@@ -52,7 +52,7 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      background-color: #050608;
+      background-color: #111114;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -68,7 +68,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: radial-gradient(circle at center, #141926 0%, #050608 100%);
+      background: radial-gradient(circle at center, #1E1E23 0%, #111114 100%);
       color: #ffffff;
       z-index: 999999;
       transition: opacity 0.45s ease-out, visibility 0.45s ease-out;
@@ -80,39 +80,39 @@
     }
     .loader-icon-container {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 88px;
+      height: 88px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 24px;
     }
     .loader-icon {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       fill: none;
-      stroke: #2196F3;
-      stroke-width: 2;
+      stroke: #E8344E;
+      stroke-width: 2.2;
       stroke-linecap: round;
       stroke-linejoin: round;
-      filter: drop-shadow(0 0 12px rgba(33, 150, 243, 0.6));
+      filter: drop-shadow(0 0 16px rgba(232, 52, 78, 0.7));
       animation: pulse-icon 2s ease-in-out infinite;
     }
     .spinner-ring {
       position: absolute;
       top: 0;
       left: 0;
-      width: 80px;
-      height: 80px;
-      border: 3px solid rgba(33, 150, 243, 0.15);
-      border-top-color: #2196F3;
+      width: 88px;
+      height: 88px;
+      border: 3.5px solid rgba(232, 52, 78, 0.15);
+      border-top-color: #E8344E;
       border-radius: 50%;
       animation: spin 1s cubic-bezier(0.55, 0.25, 0.25, 0.7) infinite;
     }
     .loader-title {
-      font-size: 26px;
+      font-size: 28px;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
       margin: 0 0 8px 0;
       color: #ffffff;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
@@ -120,7 +120,7 @@
     .loader-subtitle {
       font-size: 15px;
       font-weight: 400;
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.65);
       margin: 0;
       letter-spacing: 0.3px;
     }
@@ -129,314 +129,29 @@
       100% { transform: rotate(360deg); }
     }
     @keyframes pulse-icon {
-      0%, 100% { transform: scale(1); opacity: 0.9; }
-      50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 18px rgba(33, 150, 243, 0.85)); }
-    }
-
-    /* Fallback HTML5 TV Player (For TV browsers lacking WebAssembly/WebGL) */
-    #tv-fallback-player {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000000;
-      z-index: 1000;
-      overflow: hidden;
-    }
-    #tv-fallback-video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000000;
-    }
-    .tv-overlay-top {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 32px 48px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-    }
-    .tv-header-info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .tv-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 20px;
-      font-weight: 600;
-      color: #2196F3;
-    }
-    .tv-video-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 4px 0 0 0;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
-    }
-    .tv-video-counter {
-      font-size: 16px;
-      color: rgba(255,255,255,0.65);
-    }
-    .tv-badge {
-      background: rgba(33, 150, 243, 0.2);
-      border: 1px solid rgba(33, 150, 243, 0.4);
-      color: #64B5F6;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
-    .tv-unmute-btn {
-      position: absolute;
-      top: 36px;
-      right: 48px;
-      background: rgba(33, 150, 243, 0.9);
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 10px 22px;
-      border-radius: 24px;
-      border: 3px solid transparent;
-      cursor: pointer;
-      display: none;
-      pointer-events: auto;
-      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.4);
-      transition: all 0.2s ease;
-    }
-    .tv-unmute-btn.focused {
-      border-color: #ffffff !important;
-      transform: scale(1.12);
-      box-shadow: 0 0 24px rgba(33, 150, 243, 1);
-    }
-    .tv-overlay-bottom {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 40px 48px 32px 48px;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      transition: opacity 0.35s ease;
-    }
-    .tv-progress-container {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      color: #ffffff;
-      font-size: 15px;
-      font-variant-numeric: tabular-nums;
-    }
-    .tv-progress-bar {
-      flex: 1;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 4px;
-      position: relative;
-      cursor: pointer;
-      overflow: hidden;
-      border: 2px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .tv-progress-bar.focused {
-      height: 12px;
-      border-color: #00E5FF;
-      box-shadow: 0 0 16px rgba(0, 229, 255, 0.85);
-    }
-    .tv-progress-fill {
-      width: 0%;
-      height: 100%;
-      background: #2196F3;
-      border-radius: 4px;
-      transition: width 0.15s linear;
-    }
-    .tv-progress-bar.focused .tv-progress-fill {
-      background: #00E5FF;
-    }
-    .tv-controls-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-    }
-    .tv-btn {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.12);
-      border: 3px solid transparent;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      outline: none;
-    }
-    .tv-btn.focused {
-      background: rgba(33, 150, 243, 0.4) !important;
-      border-color: #2196F3 !important;
-      transform: scale(1.22) !important;
-      box-shadow: 0 0 24px rgba(33, 150, 243, 0.9), inset 0 0 8px rgba(33, 150, 243, 0.4) !important;
-      z-index: 10;
-    }
-    .tv-btn-play {
-      width: 72px;
-      height: 72px;
-      background: #2196F3;
-      border: 3px solid transparent;
-    }
-    .tv-btn-play.focused {
-      background: #00E5FF !important;
-      border-color: #ffffff !important;
-      color: #000000 !important;
-      transform: scale(1.28) !important;
-      box-shadow: 0 0 32px rgba(0, 229, 255, 1), 0 0 60px rgba(33, 150, 243, 0.7) !important;
-      z-index: 10;
-    }
-    .tv-btn svg {
-      width: 26px;
-      height: 26px;
-      fill: currentColor;
-    }
-    .tv-btn-play svg {
-      width: 34px;
-      height: 34px;
-    }
-    .hidden-overlay {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* On-Screen Remote Action Toast */
-    .tv-toast {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      background: rgba(10, 15, 26, 0.9);
-      border: 2px solid rgba(33, 150, 243, 0.7);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 24px rgba(33, 150, 243, 0.4);
-      color: #ffffff;
-      padding: 16px 32px;
-      border-radius: 16px;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      pointer-events: none;
-      z-index: 2000;
-      opacity: 0;
-      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .tv-toast.visible {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      0%, 100% { transform: scale(1); opacity: 0.92; }
+      50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 22px rgba(232, 52, 78, 0.95)); }
     }
   </style>
 </head>
 <body>
-  <!-- Native Web Loader displayed instantly before Flutter scripts download & compile -->
+  <!-- Native Web Loader (Shown immediately on TV browser until Flutter initializes) -->
   <div id="native-loader">
     <div class="loader-icon-container">
       <div class="spinner-ring"></div>
       <svg class="loader-icon" viewBox="0 0 24 24">
-        <rect x="2" y="7" width="20" height="13" rx="2" ry="2"></rect>
+        <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
         <polyline points="17 2 12 7 7 2"></polyline>
-        <polygon points="10 11 15 13.5 10 16 10 11" fill="#2196F3" stroke="none"></polygon>
+        <polygon points="10 11 15 14.5 10 18 10 11" fill="#E8344E"></polygon>
       </svg>
     </div>
-    <h1 class="loader-title">TV Video Player</h1>
-    <p class="loader-subtitle">Loading player engine...</p>
-  </div>
-
-  <!-- HTML5 TV Video Player Fallback (Activated on TV browsers lacking WebAssembly/WebGL) -->
-  <div id="tv-fallback-player">
-    <video id="tv-fallback-video" playsinline preload="auto"></video>
-
-    <!-- Visual Remote Action Toast -->
-    <div class="tv-toast" id="tv-toast"></div>
-
-    <!-- Top Overlay -->
-    <div class="tv-overlay-top" id="tv-overlay-top">
-      <div class="tv-header-info">
-        <div class="tv-brand">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2">
-            <rect x="2" y="7" width="20" height="13" rx="2" ry="2"></rect>
-            <polyline points="17 2 12 7 7 2"></polyline>
-          </svg>
-          <span>TV Video Player</span>
-        </div>
-        <h2 class="tv-video-title" id="fallback-title">Big Buck Bunny 1080 10s 5mb</h2>
-        <span class="tv-video-counter" id="fallback-counter">Video 1 of 3</span>
-      </div>
-      <div class="tv-badge">TV HTML5 Mode</div>
-      <button class="tv-unmute-btn" id="fallback-unmute" onclick="window.tvPlayerUnmute()">Tap to unmute 🔊</button>
-    </div>
-
-    <!-- Bottom Controls Overlay -->
-    <div class="tv-overlay-bottom" id="tv-overlay-bottom">
-      <div class="tv-progress-container">
-        <span id="fallback-time-current">0:00</span>
-        <div class="tv-progress-bar" id="fallback-progress-bar" onclick="window.tvPlayerSeek(event)">
-          <div class="tv-progress-fill" id="fallback-progress-fill"></div>
-        </div>
-        <span id="fallback-time-total">0:00</span>
-      </div>
-
-      <div class="tv-controls-bar">
-        <!-- Index 0: Previous -->
-        <button class="tv-btn" id="btn-prev" onclick="window.tvPlayerPrev()" title="Previous Video">
-          <svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"></line></svg>
-        </button>
-        <!-- Index 1: Rewind 10s -->
-        <button class="tv-btn" id="btn-rewind" onclick="window.tvPlayerRewind()" title="Rewind 10s">
-          <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.2 3.16-1.94 5.12-1.94 4.02 0 7.33 2.99 7.89 6.89l2.49-.37C22.18 11.51 17.84 8 12.5 8z"></path></svg>
-        </button>
-        <!-- Index 2: Play / Pause (Default Focus) -->
-        <button class="tv-btn tv-btn-play focused" id="btn-play" onclick="window.tvPlayerTogglePlay()" title="Play / Pause">
-          <svg id="svg-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-          <svg id="svg-pause" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-        </button>
-        <!-- Index 3: Forward 10s -->
-        <button class="tv-btn" id="btn-forward" onclick="window.tvPlayerForward()" title="Forward 10s">
-          <svg viewBox="0 0 24 24"><path d="M11.5 8c2.65 0 5.05.99 6.9 2.6L22 7v9h-9l3.62-3.62c-1.39-1.2-3.16-1.94-5.12-1.94-4.02 0-7.33 2.99-7.89 6.89l-2.49-.37C1.82 11.51 6.16 8 11.5 8z"></path></svg>
-        </button>
-        <!-- Index 4: Next -->
-        <button class="tv-btn" id="btn-next" onclick="window.tvPlayerNext()" title="Next Video">
-          <svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"></line></svg>
-        </button>
-        <!-- Index 5: Mute -->
-        <button class="tv-btn" id="btn-mute" onclick="window.tvPlayerToggleMute()" title="Mute / Unmute">
-          <svg id="svg-volume-on" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" fill="none" stroke="currentColor" stroke-width="2"></path></svg>
-          <svg id="svg-volume-off" viewBox="0 0 24 24" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2"></line><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2"></line></svg>
-        </button>
-      </div>
-    </div>
+    <h1 class="loader-title">StreamHub TV</h1>
+    <p class="loader-subtitle">Loading television experience...</p>
   </div>
 
   <script>
     (function() {
       var loader = document.getElementById('native-loader');
-      var fallbackContainer = document.getElementById('tv-fallback-player');
-      var fallbackActive = false;
 
       function hideLoader() {
         if (!loader || loader.classList.contains('fade-out')) return;
@@ -447,439 +162,6 @@
           }
         }, 500);
       }
-
-      // Feature detection: Check WebAssembly & WebGL
-      var hasWasm = (function() {
-        try {
-          return typeof WebAssembly !== 'undefined' && typeof WebAssembly.instantiate === 'function';
-        } catch(e) {
-          return false;
-        }
-      })();
-
-      var hasWebGL = (function() {
-        try {
-          var canvas = document.createElement('canvas');
-          return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
-        } catch(e) {
-          return false;
-        }
-      })();
-
-      // -------------------------------------------------------------
-      // Fallback HTML5 TV Video Player (Optimized for TV Remote D-Pad)
-      // -------------------------------------------------------------
-      var playlist = [
-        { title: "Big Buck Bunny 1080 10s 5mb", file: "assets/assets/videos/Big_Buck_Bunny_1080_10s_5MB.mp4" },
-        { title: "Sintel 1080 10s 2mb", file: "assets/assets/videos/Sintel_1080_10s_2MB.mp4" },
-        { title: "Jellyfish 1080 10s 1mb", file: "assets/assets/videos/Jellyfish_1080_10s_1MB.mp4" }
-      ];
-      var currentIndex = 0;
-      var videoEl = document.getElementById('tv-fallback-video');
-      var overlayTop = document.getElementById('tv-overlay-top');
-      var overlayBottom = document.getElementById('tv-overlay-bottom');
-      var titleEl = document.getElementById('fallback-title');
-      var counterEl = document.getElementById('fallback-counter');
-      var timeCurrent = document.getElementById('fallback-time-current');
-      var timeTotal = document.getElementById('fallback-time-total');
-      var progressFill = document.getElementById('fallback-progress-fill');
-      var progressBar = document.getElementById('fallback-progress-bar');
-      var svgPlay = document.getElementById('svg-play');
-      var svgPause = document.getElementById('svg-pause');
-      var svgVolOn = document.getElementById('svg-volume-on');
-      var svgVolOff = document.getElementById('svg-volume-off');
-      var unmuteBtn = document.getElementById('fallback-unmute');
-      var toastEl = document.getElementById('tv-toast');
-      var hideControlsTimer = null;
-      var toastTimer = null;
-
-      // 6 Primary control buttons for D-Pad horizontal navigation
-      var controlButtons = [
-        { id: 'btn-prev', action: function() { window.tvPlayerPrev(); } },
-        { id: 'btn-rewind', action: function() { window.tvPlayerRewind(); } },
-        { id: 'btn-play', action: function() { window.tvPlayerTogglePlay(); } },
-        { id: 'btn-forward', action: function() { window.tvPlayerForward(); } },
-        { id: 'btn-next', action: function() { window.tvPlayerNext(); } },
-        { id: 'btn-mute', action: function() { window.tvPlayerToggleMute(); } }
-      ];
-      var focusedIndex = 2; // Default focus on Play/Pause (center button)
-      var focusZone = 'controls'; // 'controls', 'progress', or 'unmute'
-
-      function showToast(message) {
-        if (!toastEl) return;
-        toastEl.innerHTML = message;
-        toastEl.classList.add('visible');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function() {
-          toastEl.classList.remove('visible');
-        }, 1200);
-      }
-
-      function updateFocusUI() {
-        // Remove focus from all
-        for (var i = 0; i < controlButtons.length; i++) {
-          var el = document.getElementById(controlButtons[i].id);
-          if (el) el.classList.remove('focused');
-        }
-        if (progressBar) progressBar.classList.remove('focused');
-        if (unmuteBtn) unmuteBtn.classList.remove('focused');
-
-        if (focusZone === 'controls') {
-          var current = document.getElementById(controlButtons[focusedIndex].id);
-          if (current) current.classList.add('focused');
-        } else if (focusZone === 'progress') {
-          if (progressBar) progressBar.classList.add('focused');
-        } else if (focusZone === 'unmute') {
-          if (unmuteBtn) unmuteBtn.classList.add('focused');
-        }
-      }
-
-      function formatTime(seconds) {
-        if (isNaN(seconds) || seconds < 0) return "0:00";
-        var m = Math.floor(seconds / 60);
-        var s = Math.floor(seconds % 60);
-        return m + ":" + (s < 10 ? "0" : "") + s;
-      }
-
-      function areControlsVisible() {
-        return overlayBottom && !overlayBottom.classList.contains('hidden-overlay');
-      }
-
-      function showControls() {
-        if (overlayTop) overlayTop.classList.remove('hidden-overlay');
-        if (overlayBottom) overlayBottom.classList.remove('hidden-overlay');
-        clearTimeout(hideControlsTimer);
-        hideControlsTimer = setTimeout(function() {
-          if (videoEl && !videoEl.paused) {
-            if (overlayTop) overlayTop.classList.add('hidden-overlay');
-            if (overlayBottom) overlayBottom.classList.add('hidden-overlay');
-          }
-        }, 5000);
-        updateFocusUI();
-      }
-
-      function hideControls() {
-        if (overlayTop) overlayTop.classList.add('hidden-overlay');
-        if (overlayBottom) overlayBottom.classList.add('hidden-overlay');
-        clearTimeout(hideControlsTimer);
-      }
-
-      function loadVideo(index) {
-        if (index < 0) index = playlist.length - 1;
-        if (index >= playlist.length) index = 0;
-        currentIndex = index;
-
-        var item = playlist[currentIndex];
-        titleEl.textContent = item.title;
-        counterEl.textContent = "Video " + (currentIndex + 1) + " of " + playlist.length;
-        videoEl.src = item.file;
-        videoEl.load();
-
-        var playPromise = videoEl.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(function(err) {
-            // Autoplay unmuted blocked -> mute and retry
-            videoEl.muted = true;
-            videoEl.play();
-            if (unmuteBtn) unmuteBtn.style.display = 'block';
-            if (svgVolOn) svgVolOn.style.display = 'none';
-            if (svgVolOff) svgVolOff.style.display = 'block';
-          });
-        }
-        showControls();
-      }
-
-      window.tvPlayerTogglePlay = function() {
-        if (videoEl.paused) {
-          videoEl.play();
-          showToast('▶ Playing');
-        } else {
-          videoEl.pause();
-          showToast('❚❚ Paused');
-        }
-        showControls();
-      };
-
-      window.tvPlayerNext = function() {
-        loadVideo(currentIndex + 1);
-        showToast('⏭ ' + playlist[currentIndex].title);
-      };
-
-      window.tvPlayerPrev = function() {
-        loadVideo(currentIndex - 1);
-        showToast('⏮ ' + playlist[currentIndex].title);
-      };
-
-      window.tvPlayerForward = function() {
-        var target = Math.min(videoEl.duration || 0, videoEl.currentTime + 10);
-        videoEl.currentTime = target;
-        showToast('+10s ⏩');
-        showControls();
-      };
-
-      window.tvPlayerRewind = function() {
-        var target = Math.max(0, videoEl.currentTime - 10);
-        videoEl.currentTime = target;
-        showToast('⏪ -10s');
-        showControls();
-      };
-
-      window.tvPlayerToggleMute = function() {
-        videoEl.muted = !videoEl.muted;
-        if (svgVolOn) svgVolOn.style.display = videoEl.muted ? 'none' : 'block';
-        if (svgVolOff) svgVolOff.style.display = videoEl.muted ? 'block' : 'none';
-        if (!videoEl.muted && unmuteBtn) unmuteBtn.style.display = 'none';
-        showToast(videoEl.muted ? '🔇 Muted' : '🔊 Unmuted');
-        showControls();
-      };
-
-      window.tvPlayerUnmute = function() {
-        videoEl.muted = false;
-        if (unmuteBtn) unmuteBtn.style.display = 'none';
-        if (svgVolOn) svgVolOn.style.display = 'block';
-        if (svgVolOff) svgVolOff.style.display = 'none';
-        focusZone = 'controls';
-        showToast('🔊 Unmuted');
-        showControls();
-      };
-
-      window.tvPlayerSeek = function(event) {
-        var rect = event.currentTarget.getBoundingClientRect();
-        var pos = (event.clientX - rect.left) / rect.width;
-        if (videoEl.duration) {
-          videoEl.currentTime = pos * videoEl.duration;
-        }
-        showControls();
-      };
-
-      // Video element events
-      videoEl.addEventListener('play', function() {
-        if (svgPlay) svgPlay.style.display = 'none';
-        if (svgPause) svgPause.style.display = 'block';
-        showControls();
-      });
-
-      videoEl.addEventListener('pause', function() {
-        if (svgPlay) svgPlay.style.display = 'block';
-        if (svgPause) svgPause.style.display = 'none';
-        showControls();
-      });
-
-      videoEl.addEventListener('timeupdate', function() {
-        if (videoEl.duration) {
-          var pct = (videoEl.currentTime / videoEl.duration) * 100;
-          progressFill.style.width = pct + '%';
-          timeCurrent.textContent = formatTime(videoEl.currentTime);
-          timeTotal.textContent = formatTime(videoEl.duration);
-        }
-      });
-
-      videoEl.addEventListener('ended', function() {
-        // Continuous auto-loop to next video
-        window.tvPlayerNext();
-      });
-
-      // -------------------------------------------------------------
-      // Comprehensive TV Remote Control D-Pad & Key Navigation
-      // -------------------------------------------------------------
-      window.addEventListener('keydown', function(e) {
-        if (!fallbackActive) return;
-
-        // Auto-unmute on first user interaction if muted by browser autoplay policy
-        if (videoEl && videoEl.muted && unmuteBtn && unmuteBtn.style.display === 'block') {
-          window.tvPlayerUnmute();
-        }
-
-        var keyCode = e.keyCode || e.which;
-        var key = e.key || '';
-
-        // Check if controls are currently hidden
-        var controlsVisible = areControlsVisible();
-
-        // 1. D-PAD RIGHT (ArrowRight / KeyCode 39)
-        if (keyCode === 39 || key === 'ArrowRight' || key === 'Right') {
-          e.preventDefault();
-          if (!controlsVisible) {
-            showControls();
-            return;
-          }
-          if (focusZone === 'progress') {
-            window.tvPlayerForward();
-          } else {
-            focusZone = 'controls';
-            focusedIndex = Math.min(controlButtons.length - 1, focusedIndex + 1);
-          }
-          showControls();
-          return;
-        }
-
-        // 2. D-PAD LEFT (ArrowLeft / KeyCode 37)
-        if (keyCode === 37 || key === 'ArrowLeft' || key === 'Left') {
-          e.preventDefault();
-          if (!controlsVisible) {
-            showControls();
-            return;
-          }
-          if (focusZone === 'progress') {
-            window.tvPlayerRewind();
-          } else {
-            focusZone = 'controls';
-            focusedIndex = Math.max(0, focusedIndex - 1);
-          }
-          showControls();
-          return;
-        }
-
-        // 3. D-PAD UP (ArrowUp / KeyCode 38)
-        if (keyCode === 38 || key === 'ArrowUp' || key === 'Up') {
-          e.preventDefault();
-          if (!controlsVisible) {
-            showControls();
-            return;
-          }
-          if (focusZone === 'controls') {
-            focusZone = 'progress';
-          } else if (focusZone === 'progress' && unmuteBtn && unmuteBtn.style.display !== 'none') {
-            focusZone = 'unmute';
-          }
-          showControls();
-          return;
-        }
-
-        // 4. D-PAD DOWN (ArrowDown / KeyCode 40)
-        if (keyCode === 40 || key === 'ArrowDown' || key === 'Down') {
-          e.preventDefault();
-          if (!controlsVisible) {
-            showControls();
-            return;
-          }
-          if (focusZone === 'unmute') {
-            focusZone = 'progress';
-            showControls();
-          } else if (focusZone === 'progress') {
-            focusZone = 'controls';
-            showControls();
-          } else {
-            // Down while on buttons -> hide controls immediately for clean watching
-            hideControls();
-          }
-          return;
-        }
-
-        // 5. OK / ENTER / SELECT (KeyCode 13, 29443, 65385, 'Enter', 'Select', 'Ok')
-        if (keyCode === 13 || keyCode === 29443 || keyCode === 65385 || key === 'Enter' || key === 'Select' || key === 'Ok' || key === 'OK') {
-          e.preventDefault();
-          if (!controlsVisible) {
-            showControls();
-            return;
-          }
-          if (focusZone === 'unmute') {
-            window.tvPlayerUnmute();
-          } else if (focusZone === 'progress') {
-            window.tvPlayerTogglePlay();
-          } else {
-            // Trigger the currently focused button
-            controlButtons[focusedIndex].action();
-          }
-          showControls();
-          return;
-        }
-
-        // 6. DEDICATED TV REMOTE MEDIA KEYS (Direct Action from Anywhere)
-        // Media Play / Pause / PlayPause
-        if (keyCode === 179 || keyCode === 415 || keyCode === 19 || keyCode === 250 || keyCode === 463 || keyCode === 10252 || keyCode === 10251 || keyCode === 10250 ||
-            key === 'MediaPlayPause' || key === 'MediaPlay' || key === 'MediaPause' || key === 'Play' || key === 'Pause' || keyCode === 32) {
-          e.preventDefault();
-          focusedIndex = 2; // Focus on play
-          focusZone = 'controls';
-          window.tvPlayerTogglePlay();
-          return;
-        }
-
-        // Dedicated Fast Forward
-        if (keyCode === 228 || keyCode === 417 || keyCode === 10233 || key === 'MediaFastForward' || key === 'FastForward') {
-          e.preventDefault();
-          focusedIndex = 3;
-          focusZone = 'controls';
-          window.tvPlayerForward();
-          return;
-        }
-
-        // Dedicated Rewind
-        if (keyCode === 227 || keyCode === 412 || keyCode === 10232 || key === 'MediaRewind' || key === 'Rewind') {
-          e.preventDefault();
-          focusedIndex = 1;
-          focusZone = 'controls';
-          window.tvPlayerRewind();
-          return;
-        }
-
-        // Dedicated Track Next / PageDown
-        if (keyCode === 176 || keyCode === 425 || keyCode === 10253 || keyCode === 34 || key === 'MediaTrackNext' || key === 'NextTrack') {
-          e.preventDefault();
-          focusedIndex = 4;
-          focusZone = 'controls';
-          window.tvPlayerNext();
-          return;
-        }
-
-        // Dedicated Track Prev / PageUp
-        if (keyCode === 177 || keyCode === 424 || keyCode === 10254 || keyCode === 33 || key === 'MediaTrackPrevious' || key === 'PreviousTrack') {
-          e.preventDefault();
-          focusedIndex = 0;
-          focusZone = 'controls';
-          window.tvPlayerPrev();
-          return;
-        }
-
-        // Dedicated Mute
-        if (keyCode === 77 || keyCode === 173 || keyCode === 449 || key === 'm' || key === 'M') {
-          e.preventDefault();
-          focusedIndex = 5;
-          focusZone = 'controls';
-          window.tvPlayerToggleMute();
-          return;
-        }
-
-        // TV Back / Return Key (KeyCode 8, 27, 461, 10009)
-        if (keyCode === 8 || keyCode === 27 || keyCode === 461 || keyCode === 10009 || key === 'Back' || key === 'Return' || key === 'Escape') {
-          if (controlsVisible) {
-            e.preventDefault();
-            hideControls();
-          }
-          return;
-        }
-      });
-
-      window.addEventListener('mousemove', showControls);
-      window.addEventListener('touchstart', showControls);
-
-      function activateHtml5TvPlayer() {
-        if (fallbackActive) return;
-        fallbackActive = true;
-        hideLoader();
-        if (fallbackContainer) {
-          fallbackContainer.style.display = 'block';
-        }
-        loadVideo(0);
-        showControls();
-        updateFocusUI();
-      }
-
-      // Catch global JS/network errors
-      window.addEventListener('error', function(event) {
-        var msg = event.message || '';
-        if (msg.indexOf('WebAssembly') !== -1 || msg.indexOf('canvaskit') !== -1) {
-          console.warn('Wasm/CanvasKit load failure. Activating HTML5 TV player fallback.');
-          activateHtml5TvPlayer();
-          return;
-        }
-        var subtitle = document.querySelector('.loader-subtitle');
-        if (subtitle && !fallbackActive) {
-          subtitle.textContent = 'Error: ' + msg;
-          subtitle.style.color = '#ff6b6b';
-        }
-      });
 
       // Listen for Flutter's first frame event
       window.addEventListener('flutter-first-frame', hideLoader);
@@ -893,31 +175,24 @@
       });
       observer.observe(document.body, { childList: true, subtree: true });
 
-      // Initialization Strategy:
-      if (hasWasm && hasWebGL) {
-        // Modern browser -> Load Flutter Web
-        var s = document.createElement('script');
-        s.src = 'flutter_bootstrap.js';
-        s.async = true;
-        s.onerror = function() {
-          console.warn('Failed to load flutter_bootstrap.js. Activating HTML5 TV player fallback.');
-          activateHtml5TvPlayer();
-        };
-        document.body.appendChild(s);
+      // Catch global JS errors and show them on the loader
+      window.addEventListener('error', function(event) {
+        var msg = event.message || '';
+        var subtitle = document.querySelector('.loader-subtitle');
+        if (subtitle) {
+          subtitle.textContent = 'Error: ' + msg;
+          subtitle.style.color = '#ff6b6b';
+        }
+      });
 
-        // Fallback safety timeout if Flutter engine fails to draw in 12s
-        setTimeout(function() {
-          if (!document.querySelector('flutter-view, flt-glass-pane, flt-scene-host, canvas')) {
-            console.warn('Flutter engine timeout. Activating HTML5 TV player fallback.');
-            activateHtml5TvPlayer();
-          }
-        }, 12000);
-      } else {
-        // Smart TV browser without WebAssembly or WebGL -> Immediate smooth activation!
-        console.log('WebAssembly not supported in this browser. Running TV HTML5 video player.');
-        setTimeout(activateHtml5TvPlayer, 300);
-      }
+      // Safety timeout to dismiss loader if Flutter takes long
+      setTimeout(function() {
+        if (document.querySelector('flutter-view, flt-glass-pane, flt-scene-host, canvas')) {
+          hideLoader();
+        }
+      }, 10000);
     })();
   </script>
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
